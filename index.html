@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ex2: Promises</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <!-- Added link to the jQuery library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Exercise 2 - Working with Promises
+  Using the API at http://jsonplaceholder.typicode.com/ create an app with the following functionality. Use Promises for everything.
+  
+  Login page - Display a login form asking user for a username.
+  On Submit, look up the username entered by the user.
+  If no user is found, display a detailed error message.
+  If the user is found, store user object and render User's homepage
+  User's homepage displays:
+  User's name
+  User's post titles
+  User's albums -->
+  </head>
+  <body>
+    <div id="main-container" class="container">
+      <section class="main-section">
+        <h1>Exercise #2 - Promises</h1>
+
+        <form id="username-form">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="username"
+            required="required"
+          />
+          <button id="submit" class="btn btn-primary">
+            Submit
+          </button>
+          <button id="clear" class="btn btn-warning">
+            Clear
+          </button>
+          <!-- <button type="button" class="btn btn-primary btn-lg">Large button</button> -->
+        </form>
+      </section>
+
+      <div class="row">
+        <div id="display-results" class="col-lg-9 text-left">sldkjsldkjf</div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      $(document).ready(function() {
+        var list = $("#display-results");
+        var userId;
+        var name;
+
+        $("#submit").on("click", function() {
+          var username = $('#username').val();
+          alert(username);
+            showUserItems(username);
+        });
+
+        function getUserByName(username) {
+          return new Promise(function(resolve, reject) {
+            $.get(
+              "http://jsonplaceholder.typicode.com/users?username=" + username,
+              function(users) {
+                  name = users[0].name;
+                  userId = users[0].id;
+                  console.log(name);
+                  console.log(userId);
+                  var li = $("<div>");
+                  li.text(name +": " + userId);
+                  list.append(li);
+
+                resolve(users[0]);
+              }
+            );
+          });
+        }
+
+        function getPostsByUser(user) {
+          return new Promise(function(resolve, reject) {
+            $.get(
+              "http://jsonplaceholder.typicode.com/posts?userId=" + user.id,
+              function(posts) {
+                resolve(posts);
+              }
+            );
+          });
+        }
+
+        function displayPosts(data) {
+          //Iterate over the response, adding elements to DOM
+          data.forEach(function(data) {
+            var li = $("<div>");
+            li.text(data.userId + "-" + data.id + ": " + data.title);
+            list.append(li);
+          });
+        }
+
+        function render(posts) {
+          //render the posts data
+          alert(username);
+          var li = $("<div>");
+          li.text(name +": " + userId);
+          list.append(li);
+
+          console.log(posts);
+        }
+
+        function showUserItems(username) {
+          getUserByName(username)
+            .then(getPostsByUser)
+            .then(render);
+        }
+
+        function displayComments(data) {
+          //Iterate over the response, adding elements to DOM
+          data.forEach(function(data) {
+            var li = $("<div>");
+            li.text(data.postId + "-" + data.id + ": " + data.body);
+            list.append(li);
+          });
+        }
+
+        $("#clear").on("click", function() {
+          clearData();
+        });
+
+        function clearData() {
+          $("#display-results").empty();
+        }
+      });
+    </script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
