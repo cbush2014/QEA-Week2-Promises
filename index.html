@@ -1,5 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -30,7 +43,7 @@
       <section class="main-section">
         <h1>Exercise #2 - Promises</h1>
 
-        <form id="username-form">
+        <form id="username-form" onsubmit="return false">
           <label for="username">Username</label>
           <input
             type="text"
@@ -56,17 +69,21 @@
 
     <script type="text/javascript">
       $(document).ready(function() {
+
         var list = $("#display-results");
         var userId;
         var name;
 
         $("#submit").on("click", function() {
+          event.stopPropagation();
           var username = $('#username').val();
-          alert(username);
+            // alert(username);
+            console.log("This is the username "+username);
             showUserItems(username);
         });
 
         function getUserByName(username) {
+          console.log("start getUserByName");
           return new Promise(function(resolve, reject) {
             $.get(
               "http://jsonplaceholder.typicode.com/users?username=" + username,
@@ -85,18 +102,25 @@
           });
         }
 
-        function getPostsByUser(user) {
-          return new Promise(function(resolve, reject) {
+        function getPostsByUser(user) {            
+         return new Promise(function(resolve, reject) {
+           console.log("Get the posts for user.id = "+user.id);
+           list.append($("<div>").text("List of Posts"));
+
             $.get(
               "http://jsonplaceholder.typicode.com/posts?userId=" + user.id,
               function(posts) {
-                resolve(posts);
+                console.log('posts');
+                displayData(posts);
+
+                resolve(user);
+                reject("NO POSTS");
               }
             );
           });
         }
 
-        function displayPosts(data) {
+        function displayData(data) {
           //Iterate over the response, adding elements to DOM
           data.forEach(function(data) {
             var li = $("<div>");
@@ -106,18 +130,37 @@
         }
 
         function render(posts) {
-          //render the posts data
-          alert(username);
-          var li = $("<div>");
-          li.text(name +": " + userId);
-          list.append(li);
+          //render the posts data          
+          // var li = $("<div>");
+          // li.text(name +": " + userId);
+          // list.append(li);
 
-          console.log(posts);
+          // console.log(posts);
         }
 
+        function getAlbums(user) {            
+         return new Promise(function(resolve, reject) {
+           console.log("Get the Albums for user.id = "+user.id);           
+           list.append($("<div>").text("List of Albums"));
+            $.get(
+              "http://jsonplaceholder.typicode.com/albums?userId=" + user.id,
+              function(albums) {
+                console.log('Albums');
+                displayData(albums);
+
+                resolve(albums);
+                reject("NO Albums");
+              }
+            );
+          });
+        }
+
+
         function showUserItems(username) {
+          console.log("showUserItems function");
           getUserByName(username)
             .then(getPostsByUser)
+            .then(getAlbums)
             .then(render);
         }
 
@@ -140,7 +183,7 @@
       });
     </script>
 
-    <script
+    <!-- <script
       src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
       integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
       crossorigin="anonymous"
@@ -149,6 +192,6 @@
       src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
       integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
       crossorigin="anonymous"
-    ></script>
+    ></script> -->
   </body>
 </html>
